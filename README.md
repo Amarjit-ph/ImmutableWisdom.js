@@ -78,3 +78,12 @@ ES6 Tooling
 - 6- Webpack
 - 7- Cheat Sheet
 - 8- What to Learn Next
+
+
+
+
+# Object-Oriented Programming
+Object-Oriented Programming (OOP) is a way of writing code by organizing it into objects,
+which are like real-world things with properties (data) and actions (methods/functions).
+
+## Four Pillars of OOP
