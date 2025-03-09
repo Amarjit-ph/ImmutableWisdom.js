@@ -1,4 +1,4 @@
-# Superior JavaScript
+# Superior Javascript
 
 - 1- What is OOP
 - 2- Four Pillars of OOP
@@ -18,10 +18,6 @@ Objects
 - 10- Abstraction
 - 11- Private Properties and Methods
 - 12- Getters and Setters
-- 13- Cheat Sheet
-- 14- Exercise- Stopwatch
-- 15- Solution- Stopwatch
-
 
 Prototypes 
 
@@ -221,12 +217,118 @@ obj2.name = "Bob";
 console.log(obj1.name); // Bob (changed because obj1 and obj2 reference the same object)
 ```
 
+## Adding or Removing Properties
+In JavaScript, objects are dynamic, meaning you can add or remove properties at any time. You can access and modify properties using dot notation (.) or bracket notation ([]). Bracket notation is useful when property names are dynamic or contain special characters.
 
+Key Points:
+- Adding Properties → Use object.property = value or object["property"] = value.
+- Removing Properties → Use delete object.property.
+- Bracket Notation → Needed for dynamic keys or when property names contain spaces or special characters.
 
+```js
+let person = { name: "Alice" };
 
-8- Adding or Removing Properties
-9- Enumerating Properties
-10- Abstraction
-11- Private Properties and Methods
-12- Getters and Setters
-13- Cheat Sheet
+// Adding properties
+person.age = 25;  // Using dot notation
+person["city"] = "New York";  // Using bracket notation
+
+// Removing properties
+delete person.age;
+
+console.log(person); // { name: 'Alice', city: 'New York' }
+
+// Using bracket notation with dynamic property name
+let key = "email";
+person[key] = "alice@example.com"; // Adding dynamically
+console.log(person.email); // Outputs: alice@example.com
+```
+## Enumerating Properties
+Enumerating properties means iterating over an object's keys to access its values. JavaScript provides multiple ways to do this, such as for...in loop, Object.keys(), Object.values(), and Object.entries(). These methods help when you need to process or display object properties dynamically.
+
+Key Points:
+- for...in Loop → Iterates over all enumerable properties of an object.
+- Object.keys(obj) → Returns an array of property names (keys).
+- Object.values(obj) → Returns an array of property values.
+- Object.entries(obj) → Returns an array of key-value pairs.
+
+```js
+let person = { name: "Alice", age: 25, city: "New York" };
+
+// Using for...in loop
+for (let key in person) {
+    console.log(key, person[key]); // name Alice, age 25, city New York
+}
+
+// Using Object.keys()
+console.log(Object.keys(person)); // ["name", "age", "city"]
+
+// Using Object.values()
+console.log(Object.values(person)); // ["Alice", 25, "New York"]
+
+// Using Object.entries()
+console.log(Object.entries(person)); // [["name", "Alice"], ["age", 25], ["city", "New York"]]
+
+```
+## Abstraction , Private Properties and Methods
+Abstraction is the concept of hiding unnecessary details and exposing only what's essential. In JavaScript, private properties and methods help achieve abstraction by restricting direct access to certain parts of an object. This improves security, maintainability, and prevents unintended modifications.
+
+Key Points:
+✔ Abstraction → Hides complex logic, exposing only what’s needed.
+✔ Private Properties/Methods → Use # (private fields) or closures to keep data hidden.
+✔ Encapsulation → Prevents direct modification of internal object states.
+✔ Better Security → Protects sensitive data from external changes.
+
+```js
+class Car {
+    #engineStatus = "off"; // Private property
+
+    start() {
+        this.#toggleEngine(true);
+        console.log("Car started");
+    }
+
+    #toggleEngine(status) { // Private method
+        this.#engineStatus = status ? "on" : "off";
+    }
+}
+
+const myCar = new Car();
+myCar.start(); // Car started
+console.log(myCar.#engineStatus); // ❌ Error: Private field not accessible
+```
+## Getters and Setters
+Getters and setters allow controlled access to object properties. A getter (get) retrieves a property value, while a setter (set) modifies it. They help encapsulate logic, validate data, and restrict direct property modification, making objects more secure and maintainable.
+
+Key Points:
+✔ Getter (get) → Allows reading a property like a variable.
+✔ Setter (set) → Controls modification of a property with validation.
+✔ Encapsulation → Hides direct property access and enforces rules.
+✔ Improves Security → Prevents invalid data from being set.
+```js
+class Person {
+    constructor(name) {
+        this._name = name; // Convention: Use _ for internal properties
+    }
+
+    get name() {
+        return this._name.toUpperCase(); // Custom logic while getting
+    }
+
+    set name(newName) {
+        if (newName.length > 2) {
+            this._name = newName; // Custom validation
+        } else {
+            console.log("Name must be at least 3 characters long");
+        }
+    }
+}
+
+const person = new Person("Alice");
+console.log(person.name); // ALICE (Getter in action)
+
+person.name = "Bo"; // ❌ Invalid (Setter validation)
+person.name = "Bob"; // ✅ Valid update
+console.log(person.name); // BOB
+```
+
+# Prototypes
