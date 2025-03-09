@@ -194,7 +194,36 @@ greet(); // Outputs: Hello!
 ```
 
 
-7- Value vs Reference Types
+## Value vs Reference Types
+
+Data types are categorized into value types (primitives) and reference types (objects). Value types store data directly in memory, while reference types store a reference (or address) to the actual data in memory. This affects how data is copied and compared.
+
+```Primitives are copied independently, while objects share the same reference! ```
+
+Key Points:
+- Value Types (Primitives) → Stored directly in memory.
+- Reference Types (Objects) → Stored as a reference (memory address).
+- Copying Behavior → Value types create independent copies, while reference types share the same memory location.
+- Comparison → Value types compare actual values, while reference types compare memory addresses.
+
+```js
+// Value Type (Primitive)
+let a = 10;
+let b = a;  // Copying value
+b = 20;
+console.log(a); // 10 (unchanged)
+console.log(b); // 20
+
+// Reference Type (Object)
+let obj1 = { name: "Alice" };
+let obj2 = obj1;  // Copying reference
+obj2.name = "Bob";
+console.log(obj1.name); // Bob (changed because obj1 and obj2 reference the same object)
+```
+
+
+
+
 8- Adding or Removing Properties
 9- Enumerating Properties
 10- Abstraction
