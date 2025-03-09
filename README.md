@@ -1,4 +1,4 @@
-# Ultimate Javascript
+# Superior JavaScript
 
 - 1- What is OOP
 - 2- Four Pillars of OOP
