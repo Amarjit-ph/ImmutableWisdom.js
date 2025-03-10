@@ -332,3 +332,111 @@ console.log(person.name); // BOB
 ```
 
 # Prototypes
+Prototypes allow objects to inherit properties and methods from other objects. Every object in JavaScript has an internal link (__proto__) to its prototype, enabling reuse of functions and efficient memory usage. This forms the basis of prototypal inheritance.
+
+``` 
+Think prototype as parent
+```
+
+Key Points:
+- Prototype Chain → Objects inherit properties/methods from their prototype.
+- Memory Efficient → Shared methods are stored in one place, not copied.
+- Custom Methods → You can add methods to an object’s prototype.
+- Prototypal Inheritance → Objects inherit behavior from other objects.
+
+```js
+function Person(name) {
+    this.name = name;
+}
+
+// Adding a method to the prototype
+Person.prototype.greet = function () {
+    console.log(`Hello, my name is ${this.name}`);
+};
+
+const person1 = new Person("Alice");
+const person2 = new Person("Bob");
+
+person1.greet(); // Hello, my name is Alice
+person2.greet(); // Hello, my name is Bob
+
+console.log(person1.__proto__ === Person.prototype); // true
+```
+
+## Inheritance
+Inheritance allows one object to inherit properties and methods from another, enabling code reuse and modular design. In JavaScript, inheritance is achieved using prototypes or the class keyword (extends). This makes it easier to create specialized objects based on existing ones.
+
+Key Points:
+- Prototypal Inheritance → Objects inherit from other objects via prototypes.
+- Class-Based Inheritance → Uses class and extends to create child classes.
+- Code Reusability → Avoids duplicate code by reusing parent functionality.
+- Super Keyword → Calls methods from the parent class inside a child class.
+```js
+class Animal {
+    constructor(name) {
+        this.name = name;
+    }
+    makeSound() {
+        console.log(`${this.name} makes a sound`);
+    }
+}
+
+class Dog extends Animal {
+    bark() {
+        console.log(`${this.name} barks! 🐶`);
+    }
+}
+
+const dog = new Dog("Buddy");
+dog.makeSound(); // Buddy makes a sound
+dog.bark(); // Buddy barks! 🐶
+```
+
+## Prototypes and Prototypical Inheritance
+Prototypes allow objects to inherit properties and methods from other objects. Prototypical inheritance enables JavaScript objects to inherit from other objects directly, forming a prototype chain. This is more flexible than classical inheritance, as objects can dynamically inherit behavior without needing classes.
+
+Key Points:
+- Prototype Chain → Objects inherit from their prototype (__proto__).
+- Shared Methods → Methods defined in a prototype are shared across instances.
+- Efficient Memory Usage → Prevents duplication of functions in each object.
+- Dynamic Inheritance → Objects can inherit behavior at runtime.
+
+```js
+function Animal(name) {
+    this.name = name;
+}
+
+// Adding method to prototype
+Animal.prototype.makeSound = function () {
+    console.log(`${this.name} makes a sound`);
+};
+
+function Dog(name, breed) {
+    Animal.call(this, name); // Inheriting properties
+    this.breed = breed;
+}
+
+// Inheriting methods
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+
+Dog.prototype.bark = function () {
+    console.log(`${this.name} barks! 🐶`);
+};
+
+const dog = new Dog("Buddy", "Labrador");
+dog.makeSound(); // Buddy makes a sound
+dog.bark(); // Buddy barks! 🐶
+
+console.log(dog.__proto__ === Dog.prototype); // true
+console.log(Dog.prototype.__proto__ === Animal.prototype); // true
+```
+
+
+
+- 3- Multilevel Inheritance
+- 4- Property Descriptors
+- 5- Constructor Prototypes
+- 6- Prototype vs Instance Members
+- 7- Iterating Instance and Prototype Members
+- 8- Avoid Extending the Built-in Objects
