@@ -29,10 +29,6 @@ Prototypes
 - 6- Prototype vs Instance Members
 - 7- Iterating Instance and Prototype Members
 - 8- Avoid Extending the Built-in Objects
-- 9- Cheat Sheet
-- 10- Exercise
-- 11- Solution
-
 
 Prototypical Inheritance 
 - 1- Creating Your Own Prototypical Inheritance
@@ -43,11 +39,6 @@ Prototypical Inheritance
 - 6- Polymorphism
 - 7- When to Use Inheritance
 - 8- Mixins
-- 9- Cheat Sheet
-- 10- Exercise- Prototypical Inheritance
-- 11- Solution- Prototypical Inheritance
-- 12- Exercise- Polymorphism
-- 13- Solution- Polymorphism
 
 ES6 Classes 
 
@@ -60,10 +51,6 @@ ES6 Classes
 - 7- Getters and Setters
 - 8- Inheritance
 - 9- Method Overriding
-- 10- Cheat Sheet
-- 11- Exercise
-- 12- Solution
-
 
 ES6 Tooling 
 - 1- Modules
@@ -72,8 +59,6 @@ ES6 Tooling
 - 4- ES6 Tooling
 - 5- Babel
 - 6- Webpack
-- 7- Cheat Sheet
-- 8- What to Learn Next
 
 
 
@@ -432,11 +417,480 @@ console.log(dog.__proto__ === Dog.prototype); // true
 console.log(Dog.prototype.__proto__ === Animal.prototype); // true
 ```
 
+## Multilevel Inheritance
+
+Multilevel inheritance occurs when a class (or object) inherits from another class, which itself inherits from another. This creates a chain of inheritance, where properties and methods are passed down through multiple levels, promoting code reusability and modularity.
+
+Key Points:
+- Chained Inheritance → A child class inherits from a parent, which itself inherits from another class.
+- Code Reusability → Avoids redundant code by passing down methods and properties.
+- Prototype Chain → Each level in the hierarchy links to the previous one.
+- Super Keyword → Used to call parent class methods in a subclass.
+
+```js
+class Animal {
+    constructor(name) {
+        this.name = name;
+    }
+    makeSound() {
+        console.log(`${this.name} makes a sound`);
+    }
+}
+
+class Mammal extends Animal {
+    feedMilk() {
+        console.log(`${this.name} feeds milk`);
+    }
+}
+
+class Dog extends Mammal {
+    bark() {
+        console.log(`${this.name} barks! 🐶`);
+    }
+}
+
+const dog = new Dog("Buddy");
+dog.makeSound(); // Buddy makes a sound
+dog.feedMilk(); // Buddy feeds milk
+dog.bark(); // Buddy barks! 🐶
+
+```
+## Property Descriptors
+
+Property descriptors define the behavior of object properties in JavaScript. Every property has a descriptor that controls whether the property is writable, enumerable, and configurable. Using Object.defineProperty(), you can customize or lock down how properties behave, adding more control over your objects.
+
+Key Points:
+- Writable → Can the property's value be changed?
+- Enumerable → Will the property show up in loops like for...in?
+- Configurable → Can the property be deleted or modified?
+- Control Access → Fine-tune object property behavior.
+
+```js
+let person = {};
+
+Object.defineProperty(person, "name", {
+    value: "Alice",
+    writable: false, // Can't change value
+    enumerable: true, // Will show in loops
+    configurable: false // Can't delete or redefine
+});
+
+console.log(person.name); // Alice
+person.name = "Bob"; // ❌ Won't change because writable: false
+console.log(person.name); // Alice
+
+for (let key in person) {
+    console.log(key); // name (because enumerable: true)
+}
+
+delete person.name; // ❌ Won't delete because configurable: false
+console.log(person.name); // Alice
+```
+
+## Constructor Prototypes
+when you create an object using a constructor function, methods or properties shared across all instances are added to the constructor’s prototype. This allows all instances to access the same method without duplicating it in each object, making memory usage efficient and enabling prototypal inheritance.
+
+Key Points:
+- Constructor Function → Creates multiple similar objects.
+- Prototype Property → Attach shared methods to save memory.
+- Inheritance → All instances inherit methods from the prototype.
+- Efficient → One method stored, shared by all instances.
+
+```js
+function Person(name) {
+    this.name = name;
+}
+
+// Adding method to constructor's prototype
+Person.prototype.greet = function () {
+    console.log(`Hello, I am ${this.name}`);
+};
+
+const person1 = new Person("Alice");
+const person2 = new Person("Bob");
+
+person1.greet(); // Hello, I am Alice
+person2.greet(); // Hello, I am Bob
+
+console.log(person1.__proto__ === Person.prototype); // true
+```
+
+## Prototype vs Instance Members
+Instance members are properties or methods defined inside the constructor function; each object instance gets its own copy. Prototype members, on the other hand, are defined on the constructor’s prototype and are shared across all instances, saving memory and enabling inheritance.
+
+Key Points:
+- Instance Members → Defined inside constructor, unique to each object.
+- Prototype Members → Defined on prototype, shared by all instances.
+- Memory Efficient → Prototype members avoid duplication.
+- Customization → Use instance members for unique data, prototype members for common behavior.
+
+```js
+function Person(name) {
+    // Instance member
+    this.name = name;
+    this.sayHello = function () {
+        console.log(`Hi, I am ${this.name}`);
+    };
+}
+
+// Prototype member
+Person.prototype.greet = function () {
+    console.log(`Hello from ${this.name}`);
+};
+
+const person1 = new Person("Alice");
+const person2 = new Person("Bob");
+
+// Instance method (each has own copy)
+person1.sayHello(); // Hi, I am Alice
+person2.sayHello(); // Hi, I am Bob
+
+// Prototype method (shared)
+person1.greet(); // Hello from Alice
+person2.greet(); // Hello from Bob
+
+console.log(person1.sayHello === person2.sayHello); // false (separate copies)
+console.log(person1.greet === person2.greet); // true (shared)
+```
+
+## Iterating Instance and Prototype Members
+you can iterate over both instance and prototype members using loops like for...in. However, instance members are directly present in the object, while prototype members are inherited via the prototype chain. To distinguish between them, you can use the hasOwnProperty() method, which checks if a property belongs directly to the instance.
+
+Key Points:
+- for...in Loop → Iterates over both instance and prototype members.
+- hasOwnProperty() → Filters out prototype members, returning only instance members.
+- Prototype Chain → Prototype members appear unless filtered.
+- Control → Helps differentiate between own and inherited properties.
+
+##  Avoid Extending the Built-in Objects
+Extending built-in objects like Array, Object, or String might seem convenient, but it's discouraged. Modifying or adding methods to their prototypes can lead to unexpected behavior, conflicts with other libraries, and can break future updates, making your code less predictable and harder to maintain.
+
+Key Points:
+- Risk of Conflicts → Other libraries or future JavaScript versions might use the same method name.
+- Unexpected Behavior → Can cause bugs when looping or using built-in functions.
+- Hard to Maintain → Makes debugging and upgrading difficult.
+- Best Practice → Create utility/helper functions instead of modifying built-ins.
+
+```js
+// Bad practice: Extending built-in prototype
+Array.prototype.sayHello = function () {
+    console.log("Hello from Array!");
+};
+
+const arr = [1, 2, 3];
+arr.sayHello(); // Works, but risky!
+
+for (let item in arr) {
+    console.log(item); // Will also include 'sayHello' - unexpected behavior!
+}
+```
+
+# Prototypical Inheritance 
+Prototypical inheritance allows one object to inherit properties and methods from another object through its prototype. Instead of classes, JavaScript uses a prototype chain where objects link to other objects, enabling flexible and dynamic inheritance. This promotes code reuse and shared behavior without duplicating functionality.
+
+Key Points:
+- Prototype Chain → Objects inherit from other objects' prototypes.
+- Shared Methods → Reduces memory usage, as methods are not copied to each instance.
+- Dynamic Inheritance → Objects can inherit behavior at runtime.
+- Flexible Structure → No rigid class hierarchy needed.
+
+```js
+const animal = {
+    eat: function () {
+        console.log(`${this.name} is eating`);
+    }
+};
+
+const dog = {
+    name: "Buddy"
+};
+
+// Setting prototype
+Object.setPrototypeOf(dog, animal);
+
+dog.eat(); // Buddy is eating
+console.log(dog.__proto__ === animal); // true
+```
+
+## Creating Your Own Prototypical Inheritance
+You can create your own prototypical inheritance by manually linking objects using Object.create() or by setting the prototype of one constructor function to an instance of another. This allows child objects to inherit properties and methods from parent objects, enabling code reuse and hierarchical relationships.
+
+Key Points:
+- Object.create() → Directly sets the prototype of a new object.
+- Constructor Inheritance → Child constructor’s prototype points to parent’s prototype.
+- Shared Behavior → Child objects can access parent methods.
+- Flexible & Dynamic → Easy to modify or extend inheritance chains.
+
+```js
+const animal = {
+    eat: function () {
+        console.log(`${this.name} is eating`);
+    }
+};
+
+const dog = Object.create(animal);
+dog.name = "Max";
+dog.eat(); // Max is eating
+```
+
+```js
+function Animal(name) {
+    this.name = name;
+}
+Animal.prototype.eat = function () {
+    console.log(`${this.name} eats`);
+};
+
+function Dog(name) {
+    Animal.call(this, name); // Call parent constructor
+}
+Dog.prototype = Object.create(Animal.prototype); // Inherit prototype
+Dog.prototype.constructor = Dog;
+
+const dog1 = new Dog("Buddy");
+dog1.eat(); // Buddy eats
+```
+## Resetting the Constructor
+When setting up prototypical inheritance using Object.create(), the child’s prototype inherits from the parent, but the constructor property of the child points to the parent constructor by default. To maintain clarity and avoid confusion, it’s important to reset the constructor property back to the child’s constructor.
+
+Key Points:
+- Prototype Chain Issue → Child's prototype constructor points to parent constructor.
+- Why Reset? → Keeps the correct reference to child’s constructor.
+- Maintains Clarity → Helps in debugging and object identification.
+- Simple Fix → Use Child.prototype.constructor = Child;
+
+```js
+function Animal(name) {
+    this.name = name;
+}
+Animal.prototype.eat = function () {
+    console.log(`${this.name} eats`);
+};
+
+function Dog(name) {
+    Animal.call(this, name);
+}
+
+// Inherit from Animal
+Dog.prototype = Object.create(Animal.prototype);
+
+// Resetting constructor
+Dog.prototype.constructor = Dog;
+
+const dog1 = new Dog("Buddy");
+console.log(dog1.constructor === Dog); // true
+console.log(dog1.constructor); // Outputs: Dog function
+```
+
+## Calling the Super Constructor
+when creating inheritance using constructor functions, the child constructor needs to call the parent (super) constructor to properly initialize the inherited properties. This is done using Parent.call(this, ...) inside the child constructor. It ensures that the parent’s initialization logic runs for each child instance.
+
+Key Points:
+- Parent Initialization → Use Parent.call(this, ...) to inherit properties.
+- Avoid Duplication → Ensures parent setup runs in child.
+- Proper Context → this refers to the child instance during the call.
+- Required for Inherited Properties → Without it, child lacks parent properties.
+
+```js
+function Animal(name) {
+    this.name = name;
+}
+
+function Dog(name, breed) {
+    Animal.call(this, name); // Call super constructor
+    this.breed = breed;
+}
+
+const dog1 = new Dog("Buddy", "Labrador");
+console.log(dog1.name);  // Buddy
+console.log(dog1.breed); // Labrador
+```
+
+## Intermediate Function Inheritance
+
+Intermediate function inheritance is a technique used to set up inheritance between two constructor functions without directly modifying the prototype chain, helping to avoid unwanted side effects. It introduces a temporary constructor function as a bridge to correctly link the prototypes while keeping the child constructor’s prototype clean and safe.
+
+Key Points:
+- Temporary Constructor Function → Acts as a middle layer.
+- Avoids Direct Modification → Prevents altering parent prototypes directly.
+- Safe & Clean Inheritance → Keeps prototype chains intact.
+- Maintains Constructor Reference → Child constructor remains correct.
+
+```js
+function Animal(name) {
+    this.name = name;
+}
+Animal.prototype.eat = function () {
+    console.log(`${this.name} eats`);
+};
+
+function Dog(name) {
+    Animal.call(this, name);
+}
+
+// Intermediate function
+function Temp() {}
+Temp.prototype = Animal.prototype;
+
+// Set up inheritance
+Dog.prototype = new Temp();
+Dog.prototype.constructor = Dog;
+
+const dog1 = new Dog("Buddy");
+dog1.eat(); // Buddy eats
+console.log(dog1.constructor === Dog); // true
+```
 
 
-- 3- Multilevel Inheritance
-- 4- Property Descriptors
-- 5- Constructor Prototypes
-- 6- Prototype vs Instance Members
-- 7- Iterating Instance and Prototype Members
-- 8- Avoid Extending the Built-in Objects
+## Method Overriding
+
+Method overriding occurs when a child object or subclass redefines a method inherited from its parent, providing a more specific or customized implementation. It’s a powerful way to extend or modify behavior while keeping the base functionality available if needed.
+
+Key Points:
+- Same Method Name → Child provides its own version of the method.
+- Custom Behavior → Allows tailoring inherited methods.
+- Can Still Call Parent Method → Use Parent.prototype.method.call(this) if needed.
+- Polymorphism → Enables flexible and dynamic behavior changes.
+
+```js
+function Animal(name) {
+    this.name = name;
+}
+Animal.prototype.speak = function () {
+    console.log(`${this.name} makes a sound`);
+};
+
+function Dog(name) {
+    Animal.call(this, name);
+}
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+
+// Overriding speak method
+Dog.prototype.speak = function () {
+    console.log(`${this.name} barks`);
+};
+
+const dog1 = new Dog("Buddy");
+dog1.speak(); // Buddy barks
+```
+
+## Polymorphism
+
+Polymorphism means "many forms" — it allows different objects to be treated as if they are instances of the same parent, yet each can perform behavior differently. It’s achieved by having different classes or objects implement the same method name but with different functionality, allowing flexible and dynamic code without worrying about exact object types.
+
+Key Points:
+- Same Interface, Different Behavior → Different objects share method names but behave differently.
+- Method Overriding Enables It → Each subclass provides its own implementation.
+- Simplifies Code → Write general code without worrying about specific object types.
+- Supports Extensibility → Easily add new object types without changing existing code.
+
+```js
+function Animal(name) {
+    this.name = name;
+}
+Animal.prototype.speak = function () {
+    console.log(`${this.name} makes a sound`);
+};
+
+function Dog(name) {
+    Animal.call(this, name);
+}
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+Dog.prototype.speak = function () {
+    console.log(`${this.name} barks`);
+};
+
+function Cat(name) {
+    Animal.call(this, name);
+}
+Cat.prototype = Object.create(Animal.prototype);
+Cat.prototype.constructor = Cat;
+Cat.prototype.speak = function () {
+    console.log(`${this.name} meows`);
+};
+
+// Polymorphism in action
+const animals = [new Dog("Buddy"), new Cat("Kitty")];
+
+animals.forEach(animal => animal.speak());
+// Output:
+// Buddy barks
+// Kitty meows
+```
+
+## When to Use Inheritance
+Inheritance is best used when multiple objects share common properties or behavior, and you want to avoid code duplication by moving shared logic to a parent object or class. It helps create a clear hierarchical relationship, making the code organized, reusable, and easier to maintain.
+
+Key Points:
+- Shared Behavior → When multiple objects need the same methods or properties.
+- Avoid Duplication → Move common logic to a parent object.
+- Logical Hierarchies → Use when there’s a natural “is-a” relationship (e.g., Dog is an Animal).
+- Code Maintenance → Changes in the parent reflect across all child objects.
+- Extensibility → Easily add new child types without rewriting common code.
+
+```js
+function Animal(name) {
+    this.name = name;
+}
+Animal.prototype.eat = function () {
+    console.log(`${this.name} eats`);
+};
+
+function Dog(name) {
+    Animal.call(this, name);
+}
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+
+const dog1 = new Dog("Buddy");
+dog1.eat(); // Buddy eats
+```
+
+
+## Mixins
+Mixins are a way to reuse reusable chunks of functionality across multiple unrelated objects without using inheritance. Instead of forming a parent-child relationship, mixins allow you to copy methods or properties into any object or class, providing flexibility and avoiding rigid hierarchies. It’s great when you want multiple behaviors in different objects that don't fit into a single inheritance chain.
+
+Key Points:
+- No Hierarchy Needed → Use when inheritance doesn't make sense.
+- Behavior Sharing → Share methods/properties across different objects.
+- Flexible & Modular → Easily compose behaviors without tight coupling.
+- Avoids Deep Inheritance Chains → Keeps code simple and flat.
+- Implemented via Object.assign() or functions.
+
+```js
+let canEat = {
+    eat: function() {
+        console.log("Eating...");
+    }
+};
+
+let canWalk = {
+    walk: function() {
+        console.log("Walking...");
+    }
+};
+
+function Person(name) {
+    this.name = name;
+}
+
+// Apply mixins
+Object.assign(Person.prototype, canEat, canWalk);
+
+const person1 = new Person("John");
+person1.eat();  // Eating...
+person1.walk(); // Walking...
+```
+# ES6 Classes 
+
+- ES6 Classes
+- Hoisting
+- Static Methods
+- The This Keyword
+- Private Members Using Symbols
+- Private Members Using WeakMaps
+- Getters and Setters
+- Inheritance
+- Method Overriding
